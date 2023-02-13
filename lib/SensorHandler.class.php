@@ -10,21 +10,25 @@ private $db;
 
 private function db()
 {
+try {
 $this->db=new PDO($this->c['Database']['dsn'],
 	$this->c['Database']['username'],
 	$this->c['Database']['password']);
+} catch (PDOException $e) {
+	Response::json(500, 'Database failure');
+}
 }
 
 function getSensors()
 {
 $this->db();
 try {
-	$stmt=$this->db->prepare('select sensor,max(dt) from airquality group by sensor');
+	$stmt=$this->db->prepare('select sensor,max(dt) as ts from airquality group by sensor');
 	$r=$stmt->execute();
 	$result=$stmt->fetchAll(PDO::FETCH_ASSOC);
-	Response::json(200, array(), $result);
+	Response::json(200, count($result), $result);
 } catch (PDOException $e) {
-	Response::json(500, 'Failed');
+	Response::json(500, 'Failed to get sensors');
 }
 }
 
@@ -51,9 +55,9 @@ try {
 	$r=$stmt->execute();
 	$result=$stmt->fetchAll(PDO::FETCH_ASSOC);
 
-	Response::json(200, array(), $result);
+	Response::send(200, count($result), $result);
 } catch (PDOException $e) {
-	Response::json(500, 'Failed');
+	Response::json(500, 'Failed to get sensor data');
 }
 }
 
