@@ -32,7 +32,7 @@ try {
 }
 }
 
-function getSensorData($id=null, $day=null)
+function getSensorData(?string $id=null, ?string $day=null)
 {
 $this->db();
 try {
